@@ -85,6 +85,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </button>
             </form>
 
+            <div class="switch-form">
+                <p>Don't have an account? <a href="register.php">Register here</a></p>
+            </div>
         </div>
     </div>
 

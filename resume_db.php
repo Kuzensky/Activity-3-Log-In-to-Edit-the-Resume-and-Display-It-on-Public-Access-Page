@@ -1,6 +1,4 @@
 <?php
-// Resume Database Helper Functions
-
 // Load resume data for a user
 function load_resume_data($pdo, $user_id) {
     $resume_data = [
