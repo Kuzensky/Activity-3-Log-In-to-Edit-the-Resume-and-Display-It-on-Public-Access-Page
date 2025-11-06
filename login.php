@@ -28,16 +28,41 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $password = trim($_POST["password"]);
     }
 
-    // If no validation errors, automatically log in with any credentials
+    // If no validation errors, verify credentials against database
     if(empty($email_err) && empty($password_err)){
-        // Create session variables for any email/password combination
-        $_SESSION["loggedin"] = true;
-        $_SESSION["id"] = 1; // Default user ID
-        $_SESSION["email"] = $email;
+        require_once "db.php";
 
-        // Redirect to homepage
-        header("location: index.php");
-        exit;
+        // Prepare SQL query to fetch user by email
+        $sql = "SELECT id, email, password FROM users WHERE email = ?";
+
+        if($stmt = $pdo->prepare($sql)){
+            $stmt->execute([$email]);
+
+            // Check if user exists
+            if($stmt->rowCount() == 1){
+                $row = $stmt->fetch();
+
+                // Verify password
+                if(password_verify($password, $row['password'])){
+                    // Password is correct, create session variables
+                    $_SESSION["loggedin"] = true;
+                    $_SESSION["id"] = $row['id'];
+                    $_SESSION["email"] = $row['email'];
+
+                    // Redirect to homepage
+                    header("location: index.php");
+                    exit;
+                } else {
+                    // Invalid password
+                    $login_err = "Invalid email or password.";
+                }
+            } else {
+                // User not found
+                $login_err = "Invalid email or password.";
+            }
+        } else {
+            $login_err = "Something went wrong. Please try again later.";
+        }
     }
 }
 ?>
@@ -49,7 +74,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Nayre Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="floating-shapes"></div>

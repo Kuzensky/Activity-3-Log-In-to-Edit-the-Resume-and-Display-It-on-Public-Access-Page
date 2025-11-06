@@ -405,6 +405,9 @@ body::before {
     position: relative;
     z-index: 2;
     animation: slideUp 0.6s ease-out;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .session-info {
