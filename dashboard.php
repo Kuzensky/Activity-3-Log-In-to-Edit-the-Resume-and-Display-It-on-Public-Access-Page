@@ -1,33 +1,5 @@
 <?php
-/**
- * ============================================================================
- * DASHBOARD PAGE - Resume Listing and Management
- * ============================================================================
- *
- * Purpose: Display all resumes in the system (public access)
- *
- * Page Flow:
- * 1. Check if user is logged in (session-based authentication)
- * 2. Fetch all resumes from database
- * 3. Display resumes in a responsive grid
- * 4. Show appropriate actions (View for everyone, Edit/Delete for logged-in users)
- *
- * Key PHP Concepts Demonstrated:
- * - SESSION Management: $_SESSION superglobal for user state
- * - Database Queries: Fetching data with PDO
- * - Conditional Rendering: Show/hide elements based on login status
- * - Security: Check authentication before sensitive actions
- *
- * User Experience Features:
- * - Responsive grid layout (adjusts to screen size)
- * - Custom delete confirmation modal (not browser default)
- * - Preview of resume summary (truncated to 3 lines)
- * - Visual feedback on hover
- */
 
-// START PHP SESSION
-// Sessions allow us to track logged-in users across page requests
-// Data stored in $_SESSION persists until logout or browser close
 session_start();
 
 // LOAD DEPENDENCIES
@@ -35,13 +7,10 @@ require_once 'db.php';          // Database connection ($pdo object)
 require_once 'resume_db.php';   // Resume database functions (wrapper for ResumeController)
 
 // CHECK AUTHENTICATION STATUS
-// isset() checks if variable exists and is not null
-// This boolean will be used throughout the page to show/hide features
+
 $is_logged_in = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
 // FETCH ALL RESUMES
-// get_all_resumes() returns array of all resumes with owner information
-// This includes: resume ID, title, owner name/email, summary, dates
 $resumes = get_all_resumes($pdo);
 ?>
 
