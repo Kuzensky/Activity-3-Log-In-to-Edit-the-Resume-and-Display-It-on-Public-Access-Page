@@ -1,53 +1,7 @@
-/**
- * ============================================================================
- * RESUME EDITOR - CLIENT-SIDE JAVASCRIPT
- * ============================================================================
- *
- * Purpose: Handles all interactive features of the resume editor
- *
- * Key Technologies Demonstrated:
- * - Vanilla JavaScript (no frameworks like React/Vue)
- * - DOM Manipulation (creating, modifying, removing HTML elements)
- * - Event Handling (clicks, keyboard input, drag and drop)
- * - HTML5 Drag and Drop API
- * - Fetch API (AJAX file uploads)
- * - Form Data Collection and JSON Serialization
- *
- * Main Features:
- * 1. Skills Tag Editor - Add/remove skill tags dynamically
- * 2. Projects Manager - Add projects with multiple details
- * 3. Organizations List - Manage professional affiliations
- * 4. Dynamic Sections - Add/remove optional resume sections
- * 5. Drag and Drop - Reorder sections by dragging
- * 6. Profile Picture Upload - Upload/preview/remove photos
- * 7. Form Submission - Collect all data into JSON for PHP processing
- */
 
-// ============================================================================
-// GLOBAL VARIABLES
-// ============================================================================
-// Store state that needs to be accessed across multiple functions
 let currentCategory = '';  // Tracks which skill category is being edited (programming, database, tools)
 
-// ============================================================================
-// SKILLS MANAGEMENT - Tag-based skill editor with modal
-// ============================================================================
-// Users can add skills in three categories: Programming, Database, Tools
-// Skills appear as removable tags (like tags on Stack Overflow)
 
-/**
- * OPEN SKILL MODAL
- *
- * Purpose: Show a popup modal where user can type a skill name
- *
- * Flow:
- * 1. User clicks "+" button next to a category
- * 2. Modal pops up with category-specific title
- * 3. Input field is focused (cursor ready to type)
- *
- * @param {string} category - The category ID (programming, database, tools)
- * @param {string} categoryName - Display name for the modal title
- */
 function openModal(category, categoryName) {
     // Store which category we're adding to (needed when confirming)
     currentCategory = category;
@@ -65,11 +19,6 @@ function openModal(category, categoryName) {
     document.getElementById('modalInput').focus();
 }
 
-/**
- * CLOSE SKILL MODAL
- *
- * Purpose: Hide the modal and reset state
- */
 function closeModal() {
     // Hide modal by removing 'active' class
     document.getElementById('skillModal').classList.remove('active');
@@ -78,21 +27,7 @@ function closeModal() {
     currentCategory = '';
 }
 
-/**
- * CONFIRM ADD SKILL
- *
- * Purpose: Take the skill name from modal and create a visual tag
- *
- * DOM Manipulation Demonstrated:
- * - createElement() - Create new HTML elements in JavaScript
- * - innerHTML - Set HTML content of an element
- * - insertBefore() - Insert element at specific position
- * - querySelector() - Find elements using CSS selectors
- *
- * Security Note:
- * - Uses escapeHtml() to prevent XSS (Cross-Site Scripting) attacks
- * - Never trust user input - always sanitize before inserting into DOM
- */
+
 function confirmAddSkill() {
     // Get skill name and remove extra whitespace
     const skillName = document.getElementById('modalInput').value.trim();
@@ -128,17 +63,6 @@ function confirmAddSkill() {
     closeModal();
 }
 
-/**
- * REMOVE SKILL
- *
- * Purpose: Remove a skill tag when user clicks the X button
- *
- * DOM Traversal:
- * - button.parentElement finds the tag containing this button
- * - .remove() removes the element from the page
- *
- * @param {HTMLElement} button - The X button that was clicked
- */
 function removeSkill(button) {
     button.parentElement.remove();
 }
