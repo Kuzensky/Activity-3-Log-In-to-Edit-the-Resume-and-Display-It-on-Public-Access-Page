@@ -9,7 +9,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 require_once 'db.php';
 
+// -----------------------
 // Handle remove request
+// -----------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove'])) {
     $resume_id = $_POST['resume_id'] ?? null;
 
@@ -39,7 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove'])) {
     exit;
 }
 
+// -----------------------
 // Handle file upload
+// -----------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture'])) {
     $resume_id = $_POST['resume_id'] ?? null;
 
@@ -94,19 +98,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture'])) 
         unlink(__DIR__ . '/' . $old_picture);
     }
 
+    // -----------------------
     // Move uploaded file
+    // -----------------------
     if (move_uploaded_file($file['tmp_name'], $upload_path)) {
-        // Update database - insert if not exists, update if exists
         $relative_path = 'uploads/' . $filename;
-        $stmt = $pdo->prepare("
-            INSERT INTO resume_profile (resume_id, profile_picture, updated_at, created_at)
-            VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT (resume_id) DO UPDATE SET
-                profile_picture = EXCLUDED.profile_picture,
-                updated_at = CURRENT_TIMESTAMP
-        ");
 
-        if ($stmt->execute([$resume_id, $relative_path])) {
+        // Check if resume_id exists
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM resume_profile WHERE resume_id = ?");
+        $stmt->execute([$resume_id]);
+        $exists = $stmt->fetchColumn() > 0;
+
+        if ($exists) {
+            // Update existing record
+            $stmt = $pdo->prepare("
+                UPDATE resume_profile
+                SET profile_picture = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE resume_id = ?
+            ");
+            $success = $stmt->execute([$relative_path, $resume_id]);
+        } else {
+            // Create new record with placeholder values for required columns
+            // Adjust placeholders as needed for your schema
+            $stmt = $pdo->prepare("
+                INSERT INTO resume_profile 
+                    (resume_id, full_name, email, phone_number, profile_picture, created_at, updated_at)
+                VALUES 
+                    (?, 'Unknown', 'unknown@example.com', '0000000000', ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ");
+            $success = $stmt->execute([$resume_id, $relative_path]);
+        }
+
+        if ($success) {
             echo json_encode([
                 'success' => true,
                 'message' => 'Profile picture uploaded successfully',
